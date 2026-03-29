@@ -12,13 +12,30 @@ function useActiveItem() {
     const $article = document.querySelector('#markdown-wrapper')
     if (!$article) return
     const $headings = Array.from($article.querySelectorAll('h1,h2,h3,h4,h5,h6'))
+    
+    // 如果没有找到标题，返回
+    if ($headings.length === 0) return
+    
+    // 特殊情况：如果滚动位置在页面顶部，激活第一个标题
+    if (scrollY < 100) {
+      const firstHeading = $headings[0]
+      if (firstHeading && firstHeading.id) {
+        startTransition(() => {
+          setActiveItem(firstHeading.id)
+        })
+        return
+      }
+    }
+    
+    // 正常计算激活项
     for (let i = 0; i < $headings.length; i++) {
       const item = $headings[i]
       const nextItem = $headings[i + 1]
       const itemTop = item.getBoundingClientRect().top
       const nextItemTop = nextItem ? nextItem.getBoundingClientRect().top : 10000
 
-      if (itemTop <= 96 && nextItemTop > 96) {
+      // 使用更灵活的阈值：标题顶部在96px附近（考虑导航栏偏移）
+      if (itemTop <= 120 && nextItemTop > 72) {
         startTransition(() => {
           setActiveItem(item.id)
         })

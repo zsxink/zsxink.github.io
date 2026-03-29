@@ -17,6 +17,12 @@
 .markdown h5,
 .markdown h6 {
   scroll-margin-top: 96px !important;
+  scroll-padding-top: 96px !important;
+}
+
+/* 确保第一个h2标题有足够的空间 */
+.markdown h2:first-of-type {
+  padding-top: 4px;
 }
 
 .markdown h1 {

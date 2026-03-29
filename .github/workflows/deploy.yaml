@@ -2,12 +2,16 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ] # 只有推送到 main 分支时触发
+    branches: [ main ]
 
 permissions:
   contents: read
   pages: write
   id-token: write
+
+# 设置全局环境变量，确保所有步骤都使用北京时间
+env:
+  TZ: Asia/Shanghai
 
 jobs:
   build:
@@ -19,24 +23,25 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 9 # 适配你的 pnpm 版本
+          version: 9
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # 建议使用 LTS 版本进行构建，更稳定
+          node-version: 24 # 匹配你本地的 v24.14.0，保持环境一致
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install
 
       - name: Build Astro
+        # 也可以在这里单独指定环境变量
         run: pnpm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist # Astro 默认打包输出目录
+          path: ./dist
 
   deploy:
     needs: build

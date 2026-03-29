@@ -30,6 +30,16 @@ export default defineConfig({
       animationClass: 'swup-transition-',
       containers: ['main'],
       morph: ['[component-export="Provider"]'],
+      // 禁用SWUP对锚点链接的处理，让浏览器原生处理
+      linkSelector: 'a[href]:not([href^="#"])',
+      // 确保当前页面锚点链接不被SWUP处理
+      ignoreVisit: (url, { el } = {}) => {
+        // 忽略带有data-no-swup属性的链接
+        if (el?.closest('[data-no-swup]')) return true
+        // 忽略锚点链接（以#开头）
+        if (url.startsWith('#')) return true
+        return false
+      },
     }),
   ],
   markdown: {

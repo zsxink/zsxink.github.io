@@ -18,7 +18,7 @@ function useActiveItem() {
       const itemTop = item.getBoundingClientRect().top
       const nextItemTop = nextItem ? nextItem.getBoundingClientRect().top : 10000
 
-      if (itemTop <= 80 && nextItemTop > 80) {
+      if (itemTop <= 96 && nextItemTop > 96) {
         startTransition(() => {
           setActiveItem(item.id)
         })
@@ -93,6 +93,31 @@ export function TocItem({
     }
   }, [isActive])
 
+  const handleClick = () => {
+    // 让浏览器首先尝试原生锚点导航
+    // 如果浏览器支持CSS scroll-margin-top，这应该工作
+    // 作为备用方案，如果CSS不工作，我们添加一个延迟的JS修复
+    setTimeout(() => {
+      const target = document.getElementById(slug)
+      if (target) {
+        // 检查目标是否在正确位置（考虑导航栏）
+        const rect = target.getBoundingClientRect()
+        const headerHeight = 64 // 导航栏高度
+        const extraPadding = 32 // 额外间距
+        
+        // 如果标题被导航栏遮挡
+        if (rect.top < headerHeight + extraPadding) {
+          // 手动滚动到正确位置
+          const targetPosition = target.offsetTop - headerHeight - extraPadding
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          })
+        }
+      }
+    }, 100) // 给浏览器100ms时间来处理原生滚动
+  }
+
   return (
     <li className="relative" ref={itemRef}>
       <span
@@ -104,10 +129,13 @@ export function TocItem({
       ></span>
       <a
         className={clsx(
-          'inline-block pl-8 opacity-0 transition-opacity duration-300',
-          isActive ? 'opacity-100' : 'group-hover:opacity-100 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100',
+          'inline-block pl-8 transition-colors duration-300',
+          isActive
+            ? 'font-bold text-accent'
+            : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100',
         )}
         href={`#${slug}`}
+        onClick={handleClick}
       >
         <span>{text}</span>
       </a>

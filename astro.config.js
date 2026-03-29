@@ -30,9 +30,9 @@ export default defineConfig({
       animationClass: 'swup-transition-',
       containers: ['main'],
       morph: ['[component-export="Provider"]'],
-      // 禁用SWUP对锚点链接的处理，让浏览器原生处理
-      linkSelector: 'a[href]:not([href^="#"])',
-      // 确保当前页面锚点链接不被SWUP处理
+      // 恢复默认的linkSelector，确保页面导航链接正常工作
+      linkSelector: 'a[href]',
+      // 通过ignoreVisit函数排除锚点链接
       ignoreVisit: (url, { el } = {}) => {
         // 忽略带有data-no-swup属性的链接
         if (el?.closest('[data-no-swup]')) return true

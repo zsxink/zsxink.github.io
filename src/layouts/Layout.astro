@@ -36,5 +36,50 @@ const { title, description, image } = Astro.props
     <BackToTopFAB client:only="react" />
     <ToastContainer client:only="react" />
     <ModalStack client:only="react" />
+    
+    <!-- 简单可靠的滚动解决方案 -->
+    <script is:inline>
+      // 处理固定导航栏遮挡问题
+      document.addEventListener('DOMContentLoaded', function() {
+        // 监听所有锚点链接点击
+        document.addEventListener('click', function(event) {
+          const link = event.target.closest('a[href^="#"]')
+          if (!link) return
+          
+          // 确保是TOC链接（排除其他锚点）
+          if (!link.hasAttribute('data-toc-link')) return
+          
+          event.preventDefault()
+          const hash = link.getAttribute('href')
+          const targetId = hash.replace('#', '')
+          const target = document.getElementById(targetId)
+          
+          if (target) {
+            // 计算正确的滚动位置
+            const headerHeight = 64 // 导航栏高度
+            const extraPadding = 32 // 额外间距
+            const targetPosition = target.offsetTop - headerHeight - extraPadding
+            
+            // 平滑滚动到正确位置
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            })
+            
+            // 更新URL（SWUP会忽略锚点链接）
+            window.history.pushState(null, '', hash)
+            
+            // 触发滚动完成事件（如果需要）
+            setTimeout(() => {
+              window.dispatchEvent(new CustomEvent('scrolltoanchor', {
+                detail: { targetId, position: targetPosition }
+              }))
+            }, 300)
+          }
+        }, true)
+        
+        console.log('滚动解决方案已启用：固定导航栏偏移 = 96px')
+      })
+    </script>
   </body>
 </html>

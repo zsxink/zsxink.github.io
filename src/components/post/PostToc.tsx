@@ -94,28 +94,8 @@ export function TocItem({
   }, [isActive])
 
   const handleClick = () => {
-    // 让浏览器首先尝试原生锚点导航
-    // 如果浏览器支持CSS scroll-margin-top，这应该工作
-    // 作为备用方案，如果CSS不工作，我们添加一个延迟的JS修复
-    setTimeout(() => {
-      const target = document.getElementById(slug)
-      if (target) {
-        // 检查目标是否在正确位置（考虑导航栏）
-        const rect = target.getBoundingClientRect()
-        const headerHeight = 64 // 导航栏高度
-        const extraPadding = 32 // 额外间距
-        
-        // 如果标题被导航栏遮挡
-        if (rect.top < headerHeight + extraPadding) {
-          // 手动滚动到正确位置
-          const targetPosition = target.offsetTop - headerHeight - extraPadding
-          window.scrollTo({
-            top: targetPosition,
-            behavior: 'smooth'
-          })
-        }
-      }
-    }, 100) // 给浏览器100ms时间来处理原生滚动
+    // SWUP滚动插件会处理锚点导航和滚动偏移
+    // 我们只需要确保链接被正确点击，SWUP会接管其余工作
   }
 
   return (
@@ -136,6 +116,7 @@ export function TocItem({
         )}
         href={`#${slug}`}
         onClick={handleClick}
+        data-toc-link="true"
       >
         <span>{text}</span>
       </a>

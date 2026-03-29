@@ -2,6 +2,8 @@
 import type { CollectionEntry } from 'astro:content'
 import { PostCardHoverOverlay } from './PostCardHoverOverlay'
 import PostMetaInfo from './PostMetaInfo.astro'
+import { render } from 'astro:content'
+import { getId } from '@/utils/content'
 
 interface Props {
   entry: CollectionEntry<'posts'>
@@ -9,10 +11,10 @@ interface Props {
 
 const { entry } = Astro.props
 
-const { remarkPluginFrontmatter } = await entry.render()
+const { remarkPluginFrontmatter } = await render(entry)
 ---
 
-<a class="block relative py-8 focus-visible:outline-0" href={`/posts/${entry.slug}`}>
+<a class="block relative py-8 focus-visible:outline-0" href={`/posts/${getId(entry)}`}>
   <PostCardHoverOverlay client:only="react" />
   <h2 class="relative text-2xl font-bold">
     {entry.data.title}

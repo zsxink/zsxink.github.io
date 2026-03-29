@@ -1,6 +1,9 @@
-import { getCollection } from 'astro:content'
+import { getCollection, render } from 'astro:content'
 
-// 获取所有文章
+export function getId(entry: { id: string }) {
+  return entry.id.replace(/\.[^.]+$/, '')
+}
+
 async function getAllPosts() {
   const allPosts = await getCollection('posts', ({ data }) => {
     return import.meta.env.PROD ? data.draft !== true : true
@@ -9,7 +12,6 @@ async function getAllPosts() {
   return allPosts
 }
 
-// 获取所有文章，发布日期升序
 async function getNewestPosts() {
   const allPosts = await getAllPosts()
 
@@ -18,7 +20,6 @@ async function getNewestPosts() {
   })
 }
 
-// 获取所有文章，发布日期降序
 export async function getOldestPosts() {
   const allPosts = await getAllPosts()
 
@@ -27,7 +28,6 @@ export async function getOldestPosts() {
   })
 }
 
-// 获取所有文章，置顶优先，发布日期降序
 export async function getSortedPosts() {
   const allPosts = await getAllPosts()
 
@@ -40,12 +40,11 @@ export async function getSortedPosts() {
   })
 }
 
-// 获取所有文章的字数
 export async function getAllPostsWordCount() {
   const allPosts = await getAllPosts()
 
   const promises = allPosts.map((post) => {
-    return post.render()
+    return render(post)
   })
 
   const res = await Promise.all(promises)
@@ -57,12 +56,10 @@ export async function getAllPostsWordCount() {
   return wordCount
 }
 
-// 转换为 URL 安全的 slug，删除点，空格转为短横线，大写转为小写
 export function slugify(text: string) {
   return text.replace(/\./g, '').replace(/\s/g, '-').toLowerCase()
 }
 
-// 获取所有分类
 export async function getAllCategories() {
   const newestPosts = await getNewestPosts()
 
@@ -89,7 +86,6 @@ export async function getAllCategories() {
   return allCategories
 }
 
-// 获取所有标签
 export async function getAllTags() {
   const newestPosts = await getNewestPosts()
 
@@ -116,7 +112,6 @@ export async function getAllTags() {
   return allTags
 }
 
-// 获取热门标签
 export async function getHotTags(len = 5) {
   const allTags = await getAllTags()
 

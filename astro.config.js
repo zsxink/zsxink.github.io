@@ -30,6 +30,8 @@ export default defineConfig({
       animationClass: 'swup-transition-',
       containers: ['main'],
       morph: ['[component-export="Provider"]'],
+      // 禁用 swup 的平滑滚动，使用自定义滚动脚本处理锚点偏移
+      smoothScrolling: false,
       // 恢复默认的linkSelector，确保页面导航链接正常工作
       linkSelector: 'a[href]',
       // 通过ignoreVisit函数排除锚点链接

@@ -37,98 +37,56 @@ const { title, description, image } = Astro.props
     <ToastContainer client:only="react" />
     <ModalStack client:only="react" />
     
-    <!-- 简单可靠的滚动解决方案 -->
+    <!-- 固定导航栏锚点滚动偏移解决方案 -->
     <script is:inline>
-      // 处理固定导航栏遮挡问题
-      document.addEventListener('DOMContentLoaded', function() {
-        // 监听所有锚点链接点击
-        document.addEventListener('click', function(event) {
-          const link = event.target.closest('a[href^="#"]')
-          if (!link) return
-          
-          // 确保是TOC链接（排除其他锚点）
-          if (!link.hasAttribute('data-toc-link')) return
-          
-          event.preventDefault()
-          const hash = link.getAttribute('href')
-          const targetId = hash.replace('#', '')
-          const target = document.getElementById(targetId)
-          
+      // 全局处理所有锚点点击
+      document.addEventListener('click', function(e) {
+        const link = e.target.closest('a[href^="#"]')
+        if (!link) return
+
+        const href = link.getAttribute('href')
+        if (!href || href === '#') return
+
+        const targetId = href.slice(1)
+        const target = document.getElementById(targetId)
+        if (!target) return
+
+        e.preventDefault()
+
+        // 直接计算位置：元素顶部位置减去88px偏移
+        const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 72
+        window.scrollTo({
+          top: offsetTop,
+          behavior: 'smooth'
+        })
+
+        // 更新URL
+        history.pushState(null, '', href)
+      }, true)
+
+      // 页面加载时处理hash
+      window.addEventListener('load', function() {
+        if (location.hash) {
+          const target = document.getElementById(location.hash.slice(1))
           if (target) {
-            // 计算正确的滚动位置
-            const headerHeight = 64 // 导航栏高度
-            const extraPadding = 32 // 额外间距
-            
-            // 使用更精确的getBoundingClientRect计算
-            const rect = target.getBoundingClientRect()
-            const currentScroll = window.scrollY || window.pageYOffset
-            const targetTopRelativeToViewport = rect.top
-            const targetAbsoluteTop = currentScroll + targetTopRelativeToViewport
-            
-            // 对于靠近页面顶部的第一个章节，需要特殊处理
-            const targetPosition = Math.max(0, targetAbsoluteTop - headerHeight - extraPadding)
-            
-            // 添加调试信息
-            console.log('滚动到章节:', targetId, {
-              offsetTop: target.offsetTop,
-              getBoundingClientRectTop: rect.top,
-              currentScroll: currentScroll,
-              targetAbsoluteTop: targetAbsoluteTop,
-              targetPosition: targetPosition,
-              headerHeight: headerHeight,
-              extraPadding: extraPadding
-            })
-            
-            // 平滑滚动到正确位置
-            window.scrollTo({
-              top: targetPosition,
-              behavior: 'smooth'
-            })
-            
-            // 更新URL（SWUP会忽略锚点链接）
-            window.history.pushState(null, '', hash)
-            
-            // 触发滚动完成事件（如果需要）
             setTimeout(() => {
-              window.dispatchEvent(new CustomEvent('scrolltoanchor', {
-                detail: { targetId, position: targetPosition }
-              }))
-              console.log('滚动完成:', targetId, '当前滚动位置:', window.scrollY)
-              
-              // 额外检查：确保标题在可视区域内
-              setTimeout(() => {
-                const finalRect = target.getBoundingClientRect()
-                console.log('最终位置检查:', targetId, {
-                  topRelativeToViewport: finalRect.top,
-                  isVisible: finalRect.top >= headerHeight && finalRect.top < window.innerHeight
-                })
-              }, 100)
-            }, 300)
+              const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 72
+              window.scrollTo({ top: offsetTop, behavior: 'instant' })
+            }, 100)
           }
-        }, true)
-        
-        console.log('滚动解决方案已启用：固定导航栏偏移 = 96px')
-        
-        // 页面加载时检查是否有hash并自动滚动
-        if (window.location.hash && window.location.hash !== '#') {
-          setTimeout(() => {
-            const hash = window.location.hash
-            const targetId = hash.replace('#', '')
-            const target = document.getElementById(targetId)
-            if (target) {
-              const headerHeight = 64
-              const extraPadding = 32
-              const rect = target.getBoundingClientRect()
-              const currentScroll = window.scrollY || window.pageYOffset
-              const targetAbsoluteTop = currentScroll + rect.top
-              const targetPosition = Math.max(0, targetAbsoluteTop - headerHeight - extraPadding)
-              
-              window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-              })
-            }
-          }, 100)
+        }
+      })
+
+      // SWUP页面切换后处理hash
+      document.addEventListener('astro:page-load', function() {
+        if (location.hash) {
+          const target = document.getElementById(location.hash.slice(1))
+          if (target) {
+            setTimeout(() => {
+              const offsetTop = target.getBoundingClientRect().top + window.pageYOffset - 72
+              window.scrollTo({ top: offsetTop, behavior: 'instant' })
+            }, 100)
+          }
         }
       })
     </script>

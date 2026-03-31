@@ -34,8 +34,8 @@ function useActiveItem() {
       const itemTop = item.getBoundingClientRect().top
       const nextItemTop = nextItem ? nextItem.getBoundingClientRect().top : 10000
 
-      // 使用更灵活的阈值：标题顶部在96px附近（考虑导航栏偏移）
-      if (itemTop <= 120 && nextItemTop > 72) {
+      // 使用更灵活的阈值：标题顶部在导航栏下方附近（考虑导航栏偏移）
+      if (itemTop <= 100 && nextItemTop > 72) {
         startTransition(() => {
           setActiveItem(item.id)
         })
@@ -110,9 +110,9 @@ export function TocItem({
     }
   }, [isActive])
 
-  const handleClick = () => {
-    // SWUP滚动插件会处理锚点导航和滚动偏移
-    // 我们只需要确保链接被正确点击，SWUP会接管其余工作
+  const handleClick = (e: { preventDefault: () => void }) => {
+    // 阻止默认行为，让 Layout.astro 中的脚本处理滚动
+    e.preventDefault()
   }
 
   return (

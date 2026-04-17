@@ -14,7 +14,7 @@ sticky: 0
 
 ## 1、注册和登录 Cloudflare
 
-优先使用 Goole 登录，其次使用外网的邮箱如微软的 outlook、hotmail，注册后，直接登录！
+优先使用 Goole 登录，其次使用外网的邮箱如微软的 outlook、hotmail，注册后，直接登录！注意 Apple 登录一定要邮箱注册的 Apple ID， 手机号注册的无法登录到 Cloudflare。
 
 ![image-20260416073351738](attachments/image-20260416073351738.png)
 

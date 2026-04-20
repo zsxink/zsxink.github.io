@@ -218,3 +218,21 @@ EdgeTunnel 是一个基于 CF Worker 平台的脚本，可以将 VLESS 配置信
 ## 6、手机的 V2RayNG
 
 直接扫二维码即可！
+
+## 7、使用方式
+
+### 7.1、网页版 ChatGPT
+
+![image-20260421002303774](attachments/image-20260421002303774.png)
+
+### 7.2、网页版 Gemini
+
+![image-20260421002436081](attachments/image-20260421002436081.png)
+
+### 7.3、Codex
+
+![image-20260421002856041](attachments/image-20260421002856041.png)
+
+### 7.4、Gemini API
+
+![image-20260421002823690](attachments/image-20260421002823690.png)
